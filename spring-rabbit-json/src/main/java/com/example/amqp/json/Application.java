@@ -1,4 +1,4 @@
-package org.springframework.amqp.samples.json;
+package com.example.amqp.json;
 
 import java.util.HashMap;
 import java.util.Map;
