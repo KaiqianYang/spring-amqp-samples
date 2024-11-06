@@ -19,19 +19,22 @@ public class CustomProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendJsonMessageToBar() {
-        String json = "{\"bar\" : \"value\" }";
-        Message jsonMessage = MessageBuilder.withBody(json.getBytes())
-                .andProperties(MessagePropertiesBuilder.newInstance().setContentType("application/json").build())
-                .build();   
+    private String json = "{\"bar\" : \"value\" }";
+
+    private Message jsonMessage = MessageBuilder.withBody(json.getBytes())
+                                    .andProperties(MessagePropertiesBuilder.newInstance().setContentType("application/json").build())
+                                    .build();   
+
+    public void sendJsonMessageToBar1() {
         jsonMessage.getMessageProperties().setHeader("__TypeId__", "bar_1");
         rabbitTemplate.send(Application.BAR_QUEUE, jsonMessage);
+        logger.info("Sent JSON message to queue {}: {}", Application.BAR_QUEUE, jsonMessage);
+    }
+
+    public void sendJsonMessageToBar2() {
         jsonMessage.getMessageProperties().setHeader("__TypeId__", "bar_2");
         rabbitTemplate.send(Application.BAR_QUEUE, jsonMessage);
-        jsonMessage.getMessageProperties().setHeader("__TypeId__", "bar_3");
-        rabbitTemplate.send(Application.BAR_QUEUE, jsonMessage);
-        logger.info("Sent JSON message to queue {}: {}", Application.BAR_QUEUE, json);
-        
+        logger.info("Sent JSON message to queue {}: {}", Application.BAR_QUEUE, jsonMessage);
     }
 
     
