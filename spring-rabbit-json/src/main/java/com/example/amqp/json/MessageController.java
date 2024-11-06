@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MessageController {
 
     @Autowired
-    private Producer producer;
+    private DefaultProducer producer;
 
     @GetMapping("/sendMessages")
     public ResponseEntity<String> sendMessages(@RequestParam String queue, @RequestParam String message) {
