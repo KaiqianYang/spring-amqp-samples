@@ -18,3 +18,4 @@ jredis.log
 *.iws
 .sts4-cache
 .factorypath
+.vscode/settings.json
