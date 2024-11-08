@@ -19,3 +19,5 @@ jredis.log
 .sts4-cache
 .factorypath
 .vscode/settings.json
+spring-rabbit-json/.vscode/settings.json
+spring-rabbit/.vscode/settings.json
