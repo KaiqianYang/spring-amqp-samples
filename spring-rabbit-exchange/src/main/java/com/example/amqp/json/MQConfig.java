@@ -16,16 +16,8 @@ public class MQConfig {
     public static final String TRANSACTION_QUEUE = "application.transaction.queue";
 
     @Bean
-    @Autowired
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(jsonConverter());
-        return template;
-    }
-
-    @Bean
-    public MessageConverter jsonConverter() {
-        return new Jackson2JsonMessageConverter();
+    public DirectExchange applicationExchange() {
+        return new DirectExchange("applicationExchange");
     }
 
     @Bean
@@ -38,10 +30,6 @@ public class MQConfig {
         return new Queue(TRANSACTION_QUEUE);
     }
 
-    @Bean
-    public DirectExchange applicationExchange() {
-        return new DirectExchange("applicationExchange");
-    }
 
     @Bean
     public Binding textQueueBinding() {
@@ -56,5 +44,19 @@ public class MQConfig {
                 .to(applicationExchange())
                 .with("transaction-routing-key");
     }
+
+    @Bean
+    @Autowired
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        template.setMessageConverter(jsonConverter());
+        return template;
+    }
+
+    @Bean
+    public MessageConverter jsonConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
 
 }

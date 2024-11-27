@@ -10,12 +10,24 @@ public class TextMessageProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String message) {
-        rabbitTemplate.convertAndSend(
-            "applicationExchange",
-            "text-routing-key",
-            message
-        );
-        System.out.println("Text Message Sent: " + message);
-    }
+public void sendTransactionSuccessMessage(String transactionId) {
+    String message = "Transaction " + transactionId + " has been processed successfully";
+    rabbitTemplate.convertAndSend(
+        "applicationExchange",
+        "text-routing-key",
+        message
+    );
+    System.out.println("Transaction Success Message Sent: " + message);
+}
+
+public void sendTransactionFailureMessage(String transactionId, String reason) {
+    String message = "Transaction " + transactionId + " failed due to: " + reason;
+    rabbitTemplate.convertAndSend(
+        "applicationExchange",
+        "text-routing-key",
+        message
+    );
+    System.out.println("Transaction Failure Message Sent: " + message);
+}
+
 } 

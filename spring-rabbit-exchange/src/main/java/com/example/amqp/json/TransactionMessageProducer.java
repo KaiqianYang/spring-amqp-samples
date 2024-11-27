@@ -1,6 +1,7 @@
 package com.example.amqp.json;
 
 import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessagePropertiesBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,8 @@ public class TransactionMessageProducer {
             rabbitTemplate.send(
                 applicationExchange.getName(),
                 "transaction-routing-key",
-                MessageBuilder
-                    .withBody(transaction.toString().getBytes())
-                    .setContentType("application/json")
-                    .setHeader("priority", priority)
-                    .setHeader("transactionId", transaction.getTransactionId())
-                    .setHeader("transactionType", transaction.getTransactionType())
+                MessageBuilder.withBody(transaction.toString().getBytes())
+                    .andProperties(MessagePropertiesBuilder.newInstance().setContentType("application/json").setHeader("priority", priority).build())
                     .build()
             );
 
