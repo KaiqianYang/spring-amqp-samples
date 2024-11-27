@@ -4,62 +4,31 @@ import java.util.concurrent.CountDownLatch;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class Consumer {
-
+	private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
 	private volatile CountDownLatch latch = new CountDownLatch(2);
 
-	@RabbitListener(queues = "foo")
-	public void listenForAFoo(Foo foo) {
-		System.out.println("Expected a Foo, got a " + foo);
+	@RabbitListener(queues = "#{@textQueue.name}")
+	public void consumeTextMessage(String message) {
+		logger.info("Received text message: {}", message);
 		this.latch.countDown();
 	}
 
-	@RabbitListener(queues = "bar")
-	public void listenForABar(Bar bar) {
-		System.out.println("Expected a Bar, got a " + bar);
+	@RabbitListener(queues = "#{@transactionQueue.name}")
+	public void consumeTransaction(Transaction transaction) {
+		logger.info("Received transaction: ID={}, Amount={}, Account={}",
+			transaction.getTransactionId(),
+			transaction.getAmount(),
+			transaction.getAccountNumber());
 		this.latch.countDown();
 	}
 
-    public static class Foo {
-
-		private String foo;
-
-		public Foo() {
-			super();
-		}
-
-		public Foo(String foo) {
-			this.foo = foo;
-		}
-
-		public String getFoo() {
-			return this.foo;
-		}
-
-		public void setFoo(String foo) {
-			this.foo = foo;
-		}
-
-		@Override
-		public String toString() {
-			return getClass().getSimpleName() + " [foo=" + this.foo + "]";
-		}
-
+	public CountDownLatch getLatch() {
+		return latch;
 	}
-
-	public static class Bar extends Foo {
-
-		public Bar() {
-			super();
-		}
-
-		public Bar(String foo) {
-			super(foo);
-		}
-
-	}
-
 }
 
