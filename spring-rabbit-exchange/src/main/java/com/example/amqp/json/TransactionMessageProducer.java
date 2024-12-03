@@ -3,7 +3,6 @@ package com.example.amqp.json;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessagePropertiesBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +24,6 @@ public class TransactionMessageProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private DirectExchange applicationExchange;
-
     public void sendTransaction(Transaction transaction) {
         try {
             // Validate and enrich transaction data
@@ -37,7 +33,7 @@ public class TransactionMessageProducer {
             String priority = determineTransactionPriority(transaction);
 
             rabbitTemplate.send(
-                applicationExchange.getName(),
+                "applicationExchange",
                 "transaction-routing-key",
                 MessageBuilder.withBody(transaction.toString().getBytes())
                     .andProperties(MessagePropertiesBuilder.newInstance().setContentType("application/json").setHeader("priority", priority).build())
