@@ -1,17 +1,14 @@
 package com.example.amqp.json;
 
-import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.core.MessagePropertiesBuilder;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.azure.spring.messaging.servicebus.core.ServiceBusTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.messaging.support.MessageBuilder;
 
 @Component
 public class TransactionMessageProducer {
@@ -22,7 +19,10 @@ public class TransactionMessageProducer {
     private static final String NORMAL_PRIORITY = "normal";
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private MQConfig mqConfig;
+
+    @Autowired
+    private ServiceBusTemplate serviceBusTemplate;
 
     public void sendTransaction(Transaction transaction) {
         try {
@@ -32,11 +32,10 @@ public class TransactionMessageProducer {
             // Determine message priority based on amount
             String priority = determineTransactionPriority(transaction);
 
-            rabbitTemplate.send(
-                "applicationExchange",
-                "transaction-routing-key",
-                MessageBuilder.withBody(transaction.toString().getBytes())
-                    .andProperties(MessagePropertiesBuilder.newInstance().setContentType("application/json").setHeader("priority", priority).build())
+            serviceBusTemplate.send(
+                mqConfig.TRANSACTION_QUEUE,
+                MessageBuilder.withPayload(transaction.toString().getBytes())
+                    .setHeader("priority", priority)
                     .build()
             );
 
